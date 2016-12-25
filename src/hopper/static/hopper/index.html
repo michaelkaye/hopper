@@ -2,8 +2,9 @@
     <head>
         <link rel='stylesheet' href='/static/hopper/scheduler.min.css' />
         <link rel='stylesheet' href='/static/hopper/lib/fullcalendar.min.css' />
-        <script src='/static/hopper/lib/jquery.min.js'></script>
         <script src='/static/hopper/lib/moment.min.js'></script>
+        <script src='/static/hopper/lib/jquery.min.js'></script>
+        <script src='/static/hopper/lib/jquery-ui.min.js'></script>
         <script src='/static/hopper/lib/fullcalendar.min.js'></script>
         <script src='/static/hopper/scheduler.min.js'></script>
         <script>
@@ -31,12 +32,18 @@
                 });
                 $('#calendar').fullCalendar({
                     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+                    drop: function(date, jsEvent, ui, resourceId) {
+                        console.log('drop', date.format(), resourceId)
+                        $(this).remove();
+                    },
+                    forceEventDuration: true,
+                    droppable: true,
                     events: {
                         url: '/api/v1/events/?has_time=true'
                     },
-                    eventStartEditable: true,
-                    eventDurationEditable: true,
+                    editable: true,
                     eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
+                        console.log('eventDrop', event);
                         //on drop, ajax update this event via API
                         $.ajax({
                             url: "/api/v1/events/" +event.id,
@@ -54,6 +61,9 @@
                             error: function() { alert("Failure"); revertFunc() }
                         });
                     },
+                    eventReceive: function (event) {
+                        console.log('eventReceive', event);
+                    },
                     defaultView: 'timelineDay',
                     resourceLabelText: 'Rooms',
                     resources: {
@@ -67,6 +77,15 @@
                     dataType: "json",
                     url: "/api/v1/events/?has_time=false",
                     success: function(data) {
+                        var target = $('#unscheduled');
+                        $.each(data, function() {
+                            var div = $("<div></div>");
+                            div.text(this.title);
+                            this.duration='01:00';
+                            div.data('event', this);
+                            div.draggable({zIndex: 999, revert: true});
+                            target.append(div);
+                        });
                     }
                 });
             })
