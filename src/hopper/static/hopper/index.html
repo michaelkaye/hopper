@@ -1,0 +1,64 @@
+<html>
+    <head>
+        <link rel='stylesheet' href='/static/hopper/scheduler.min.css' />
+        <link rel='stylesheet' href='/static/hopper/lib/fullcalendar.min.css' />
+        <script src='/static/hopper/lib/jquery.min.js'></script>
+        <script src='/static/hopper/lib/moment.min.js'></script>
+        <script src='/static/hopper/lib/fullcalendar.min.js'></script>
+        <script src='/static/hopper/scheduler.min.js'></script>
+        <script>
+            $(document).ready(function() {
+                $(document).ajaxSend(function(event, xhr, settings) {
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie != '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = $.trim(cookies[i]);
+                                // Does this cookie string begin with the name we want?
+                                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                        // Only send the token to relative URLs i.e. locally.
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    }
+                });
+                $('#calendar').fullCalendar({
+                    schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+                    events: '/api/v1/events/',
+                    eventStartEditable: true,
+                    eventDurationEditable: true,
+                    eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
+                        //on drop, ajax update this event via API
+                        $.ajax({
+                            url: "/api/v1/events/" +event.id,
+                            type: "PUT",
+                            data: JSON.stringify({
+                                id: event.id,
+                                title: event.title,
+                                start: event.start.format(),
+                                end: event.end.format()
+                            }),
+                            dataType: 'json',
+                            contentType: 'application/json; charset=UTF-8',
+                            success: function() { $('#status').text(event.title +" was saved successfully") },
+                            error: function() { alert("Failure"); revertFunc() }
+                        });
+                    },
+                })
+            })
+        </script>
+    </head>
+    <body>
+        <div id="status">
+        </div>
+        <div id="calendar">
+        </div>
+    </body>
+</html>
