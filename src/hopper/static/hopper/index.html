@@ -31,7 +31,9 @@
                 });
                 $('#calendar').fullCalendar({
                     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
-                    events: '/api/v1/events/',
+                    events: {
+                        url: '/api/v1/events/?has_time=true'
+                    },
                     eventStartEditable: true,
                     eventDurationEditable: true,
                     eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
@@ -43,7 +45,8 @@
                                 id: event.id,
                                 title: event.title,
                                 start: event.start.format(),
-                                end: event.end.format()
+                                end: event.end.format(),
+                                resourceId: event.resourceId
                             }),
                             dataType: 'json',
                             contentType: 'application/json; charset=UTF-8',
@@ -51,12 +54,28 @@
                             error: function() { alert("Failure"); revertFunc() }
                         });
                     },
+                    defaultView: 'timelineDay',
+                    resourceLabelText: 'Rooms',
+                    resources: {
+                        url: '/api/v1/rooms/',
+                        error: function() {
+                            $('#status').text("Unable to load rooms");
+                        }
+                    }
                 })
+                $.ajax({
+                    dataType: "json",
+                    url: "/api/v1/events/?has_time=false",
+                    success: function(data) {
+                    }
+                });
             })
         </script>
     </head>
     <body>
         <div id="status">
+        </div>
+        <div id="unscheduled">
         </div>
         <div id="calendar">
         </div>

@@ -5,10 +5,10 @@ from hopper.models import Event, Room
 class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
-        fields = ("id", "title", "start", "end")
+        fields = ("id", "title", "start", "end", "resourceId")
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:
         model = Room
-        fields = ("id", "name")
+        fields = ("id", "title")
 

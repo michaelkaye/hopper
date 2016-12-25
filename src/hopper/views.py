@@ -7,7 +7,16 @@ def health(request):
     return HttpResponse('')
 
 class EventList(generics.ListCreateAPIView):
-    queryset = Event.objects.all()
+    def get_queryset(self):
+        queryset = Event.objects.all()
+        has_time = self.request.query_params.get('has_time', False)
+        if has_time is not None:
+            if 'true' == has_time:
+                queryset = queryset.exclude(start__isnull=True)
+            else:
+                queryset = queryset.filter(start__isnull=True)
+        return queryset
+
     serializer_class = EventSerializer
 
 class RoomList(generics.ListCreateAPIView):

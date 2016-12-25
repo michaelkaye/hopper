@@ -12,5 +12,8 @@ run: build
 migrations:
 	docker-compose run --rm ${NAME} django-admin makemigrations ${NAME}
 
+migrate:
+	docker-compose run --rm ${NAME} django-admin migrate ${NAME}
+
 static: build
 	docker-compose run --rm ${NAME} django-admin collectstatic --noinput
