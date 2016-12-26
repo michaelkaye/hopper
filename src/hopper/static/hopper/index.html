@@ -40,6 +40,10 @@
                     events: {
                         url: '/api/v1/events/?has_time=true'
                     },
+                    eventDataTransform: function(event) {
+                        event.url = '/admin/hopper/event/'+event.id+'/change';
+                        return event;
+                    },
                     editable: true,
                     eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
                         console.log('eventDrop', event);
@@ -80,7 +84,6 @@
                         $.each(data, function() {
                             var div = $("<div>OLD TEXT</div>");
                             div.text(this.title);
-                            this.duration='01:00';
                             div.data('event', {
                                 id: this.id,
                                 title: this.title

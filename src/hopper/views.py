@@ -9,6 +9,8 @@ def health(request):
 class EventList(generics.ListCreateAPIView):
     def get_queryset(self):
         queryset = Event.objects.all()
+        if not self.request.auth:
+            queryset = queryset.filter(public=True)
         has_time = self.request.query_params.get('has_time', False)
         if has_time is not None:
             if 'true' == has_time:
@@ -24,8 +26,12 @@ class RoomList(generics.ListCreateAPIView):
     serializer_class = RoomSerializer
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Event.objects.all()
     serializer_class = EventSerializer
+    def get_queryset(self):
+        queryset = Event.objects.all()
+        if not self.request.auth:
+            queryset = queryset.filter(public=True)
+        return queryset
 
 class RoomDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Room.objects.all()

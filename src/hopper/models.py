@@ -17,6 +17,10 @@ class Event(models.Model):
         Room,
         on_delete=models.SET(get_default_room)
     );
+    conbook_desc = models.TextField(default="")
+    requirements = models.TextField(default="")
+    public = models.BooleanField(default=False)
+
     def __str__(self):
         return "Event: {}".format(self.title)
 
