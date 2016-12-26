@@ -34,9 +34,8 @@
                     schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
                     drop: function(date, jsEvent, ui, resourceId) {
                         console.log('drop', date.format(), resourceId)
-                        $(this).remove();
+                        //$(this).remove();
                     },
-                    forceEventDuration: true,
                     droppable: true,
                     events: {
                         url: '/api/v1/events/?has_time=true'
@@ -47,10 +46,9 @@
                         //on drop, ajax update this event via API
                         $.ajax({
                             url: "/api/v1/events/" +event.id,
-                            type: "PUT",
+                            type: "PATCH",
                             data: JSON.stringify({
                                 id: event.id,
-                                title: event.title,
                                 start: event.start.format(),
                                 end: event.end.format(),
                                 resourceId: event.resourceId
@@ -64,7 +62,8 @@
                     eventReceive: function (event) {
                         console.log('eventReceive', event);
                     },
-                    defaultView: 'timelineDay',
+                    defaultView: 'agendaDay',
+                    forceEventDuration: true,
                     resourceLabelText: 'Rooms',
                     resources: {
                         url: '/api/v1/rooms/',
@@ -79,10 +78,13 @@
                     success: function(data) {
                         var target = $('#unscheduled');
                         $.each(data, function() {
-                            var div = $("<div></div>");
+                            var div = $("<div>OLD TEXT</div>");
                             div.text(this.title);
                             this.duration='01:00';
-                            div.data('event', this);
+                            div.data('event', {
+                                id: this.id,
+                                title: this.title
+                            });
                             div.draggable({zIndex: 999, revert: true});
                             target.append(div);
                         });
