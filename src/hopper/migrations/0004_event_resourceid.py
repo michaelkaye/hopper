@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='event',
             name='resourceId',
-            field=models.ForeignKey(default=1, on_delete=models.SET(hopper.models.get_default_room), to='hopper.Room'),
+            field=models.ForeignKey(default=1, on_delete=models.SET_NULL, to='hopper.Room'),
             preserve_default=False,
         ),
     ]

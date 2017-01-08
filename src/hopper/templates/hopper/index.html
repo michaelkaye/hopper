@@ -8,6 +8,31 @@
         <script src='/static/hopper/lib/fullcalendar.min.js'></script>
         <script src='/static/hopper/scheduler.min.js'></script>
         <script>
+
+function setStatus(color, text) {
+    x = $('#status')
+    x.text(text)
+    x.css('background-color', color)
+}
+
+function updateEvent(event, revertFunc, successFunc) {
+    setStatus('orange', "Saving event "+event.name)
+    $.ajax({
+        url: "/api/v1/events/" +event.id,
+        type: "PATCH",
+        data: JSON.stringify({
+            id: event.id,
+            start: event.start.format(),
+            end: event.end.format(),
+            resourceId: event.resourceId
+        }),
+        dataType: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        success: function() { setStatus('green', "Saved event " +event.title); successFunc() },
+        error: function() { setStatus('red', "Unable to save event "+event.title); revertFunc() }
+    });
+}
+
             $(document).ready(function() {
                 $(document).ajaxSend(function(event, xhr, settings) {
                     function getCookie(name) {
@@ -31,10 +56,19 @@
                     }
                 });
                 $('#calendar').fullCalendar({
-                    schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source',
+                    customButtons: {
+                        adminPages: {
+                            text: 'Admin',
+                            click: function() {
+                                window.location="/admin/login/"
+                            }
+                        }
+                    },
+                    defaultDate: "{{ defaultDate }}",
+                    defaultView: 'agendaDay',
                     drop: function(date, jsEvent, ui, resourceId) {
                         console.log('drop', date.format(), resourceId)
-                        //$(this).remove();
+                        $(this).remove()
                     },
                     droppable: true,
                     events: {
@@ -42,47 +76,48 @@
                     },
                     eventDataTransform: function(event) {
                         event.url = '/admin/hopper/event/'+event.id+'/change';
+                        event.backgroundColor = event.track
                         return event;
                     },
                     editable: true,
                     eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
                         console.log('eventDrop', event);
                         //on drop, ajax update this event via API
-                        $.ajax({
-                            url: "/api/v1/events/" +event.id,
-                            type: "PATCH",
-                            data: JSON.stringify({
-                                id: event.id,
-                                start: event.start.format(),
-                                end: event.end.format(),
-                                resourceId: event.resourceId
-                            }),
-                            dataType: 'json',
-                            contentType: 'application/json; charset=UTF-8',
-                            success: function() { $('#status').text(event.title +" was saved successfully") },
-                            error: function() { alert("Failure"); revertFunc() }
-                        });
+                        updateEvent(event, revertFunc, function(){})
                     },
                     eventReceive: function (event) {
                         console.log('eventReceive', event);
+                        revertFunc = function() {
+                            setStatus('red', "Unable to save event! Please reload page")
+                            alert("Unable to save dropped event on calendar. Please refresh page to continue.");
+                        }
+                        updateEvent(event, revertFunc, function(){})
                     },
-                    defaultView: 'agendaDay',
+                    eventResize: function (event, delta, revertFunc) {
+                        updateEvent(event, revertFunc, function(){})
+                    },
                     forceEventDuration: true,
+                    header: {
+                        left: 'title',
+                        right: 'adminPages prev, next'
+                    }, 
                     resourceLabelText: 'Rooms',
                     resources: {
                         url: '/api/v1/rooms/',
                         error: function() {
-                            $('#status').text("Unable to load rooms");
+                            setStatus("red", "Unable to load rooms");
                         }
-                    }
+                    },
+                    schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source'
                 })
+
                 $.ajax({
                     dataType: "json",
                     url: "/api/v1/events/?has_time=false",
                     success: function(data) {
                         var target = $('#unscheduled');
                         $.each(data, function() {
-                            var div = $("<div>OLD TEXT</div>");
+                            var div = $("<div style='margin:3' class='fc-event'>OLD TEXT</div>");
                             div.text(this.title);
                             div.data('event', {
                                 id: this.id,
@@ -91,6 +126,9 @@
                             div.draggable({zIndex: 999, revert: true});
                             target.append(div);
                         });
+                    },
+                    error: function() {
+                            setStatus("red", "Unable to load unscheduled events");
                     }
                 });
             })
