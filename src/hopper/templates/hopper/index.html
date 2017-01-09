@@ -67,7 +67,6 @@ function updateEvent(event, revertFunc, successFunc) {
                     defaultDate: "{{ defaultDate }}",
                     defaultView: 'agendaDay',
                     drop: function(date, jsEvent, ui, resourceId) {
-                        console.log('drop', date.format(), resourceId)
                         $(this).remove()
                     },
                     droppable: true,
@@ -79,14 +78,11 @@ function updateEvent(event, revertFunc, successFunc) {
                         event.backgroundColor = event.track
                         return event;
                     },
-                    editable: true,
+                    editable: {{ editable }},
                     eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
-                        console.log('eventDrop', event);
-                        //on drop, ajax update this event via API
                         updateEvent(event, revertFunc, function(){})
                     },
                     eventReceive: function (event) {
-                        console.log('eventReceive', event);
                         revertFunc = function() {
                             setStatus('red', "Unable to save event! Please reload page")
                             alert("Unable to save dropped event on calendar. Please refresh page to continue.");

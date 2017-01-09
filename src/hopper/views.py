@@ -4,6 +4,7 @@ from django.template import loader
 
 from hopper.models import Event, Room
 from hopper.serializers import EventSerializer, RoomSerializer
+from hopper.permissions import EventAccessPermission
 
 import logging
 
@@ -15,10 +16,16 @@ def health(request):
 def index(request):
     template = loader.get_template('hopper/index.html')
     logger.info(request.user.is_authenticated)
+    if request.user.is_authenticated:
+        editable='true'
+    else:
+        editable='false'
     context = {
-        'defaultDate': '2017-05-27'
+        'defaultDate': '2017-05-27',
+        'editable': editable
     }
     return HttpResponse(template.render(context, request))
+
 
 class EventList(generics.ListCreateAPIView):
     def get_queryset(self):
@@ -41,6 +48,7 @@ class RoomList(generics.ListCreateAPIView):
 
 class EventDetail(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = EventSerializer
+    permission_classes = (EventAccessPermission, )
     def get_queryset(self):
         queryset = Event.objects.all()
         if not self.request.user.is_authenticated:
