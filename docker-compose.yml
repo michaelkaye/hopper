@@ -1,0 +1,9 @@
+hopper:
+  build: .
+  environment: 
+    - A=b
+  volumes:
+    - .:/home/hopper/code
+  command: ./bin/run
+  ports:
+      - 8000:8000

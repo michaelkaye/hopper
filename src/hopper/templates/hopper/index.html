@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <link rel='stylesheet' href='/static/hopper/scheduler.min.css' />
+        <link rel='stylesheet' href='/static/hopper/lib/fullcalendar.min.css' />
+        <script src='/static/hopper/lib/moment.min.js'></script>
+        <script src='/static/hopper/lib/jquery.min.js'></script>
+        <script src='/static/hopper/lib/jquery-ui.min.js'></script>
+        <script src='/static/hopper/lib/fullcalendar.min.js'></script>
+        <script src='/static/hopper/scheduler.min.js'></script>
+        <script>
+
+function setStatus(color, text) {
+    x = $('#status')
+    x.text(text)
+    x.css('background-color', color)
+}
+
+function updateEvent(event, revertFunc, successFunc) {
+    setStatus('orange', "Saving event "+event.name)
+    $.ajax({
+        url: "/api/v1/events/" +event.id,
+        type: "PATCH",
+        data: JSON.stringify({
+            id: event.id,
+            start: event.start.format(),
+            end: event.end.format(),
+            resourceId: event.resourceId
+        }),
+        dataType: 'json',
+        contentType: 'application/json; charset=UTF-8',
+        success: function() { setStatus('green', "Saved event " +event.title); successFunc() },
+        error: function() { setStatus('red', "Unable to save event "+event.title); revertFunc() }
+    });
+}
+
+            $(document).ready(function() {
+                $(document).ajaxSend(function(event, xhr, settings) {
+                    function getCookie(name) {
+                        var cookieValue = null;
+                        if (document.cookie && document.cookie != '') {
+                            var cookies = document.cookie.split(';');
+                            for (var i = 0; i < cookies.length; i++) {
+                                var cookie = $.trim(cookies[i]);
+                                // Does this cookie string begin with the name we want?
+                                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                    break;
+                                }
+                            }
+                        }
+                        return cookieValue;
+                    }
+                    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                        // Only send the token to relative URLs i.e. locally.
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    }
+                });
+                $('#calendar').fullCalendar({
+                    customButtons: {
+                        adminPages: {
+                            text: 'Admin',
+                            click: function() {
+                                window.location="/admin/login/"
+                            }
+                        }
+                    },
+                    defaultDate: "{{ defaultDate }}",
+                    defaultView: 'agendaDay',
+                    drop: function(date, jsEvent, ui, resourceId) {
+                        $(this).remove()
+                    },
+                    droppable: true,
+                    events: {
+                        url: '/api/v1/events/?has_time=true'
+                    },
+                    eventDataTransform: function(event) {
+                        event.url = '/admin/hopper/event/'+event.id+'/change';
+                        event.backgroundColor = event.track
+                        return event;
+                    },
+                    editable: {{ editable }},
+                    eventDrop: function( event, delta, revertFunc, jsEvent, ui, view) {
+                        updateEvent(event, revertFunc, function(){})
+                    },
+                    eventReceive: function (event) {
+                        revertFunc = function() {
+                            setStatus('red', "Unable to save event! Please reload page")
+                            alert("Unable to save dropped event on calendar. Please refresh page to continue.");
+                        }
+                        updateEvent(event, revertFunc, function(){})
+                    },
+                    eventResize: function (event, delta, revertFunc) {
+                        updateEvent(event, revertFunc, function(){})
+                    },
+                    forceEventDuration: true,
+                    header: {
+                        left: 'title',
+                        right: 'adminPages prev, next'
+                    }, 
+                    resourceLabelText: 'Rooms',
+                    resources: {
+                        url: '/api/v1/rooms/',
+                        error: function() {
+                            setStatus("red", "Unable to load rooms");
+                        }
+                    },
+                    schedulerLicenseKey: 'GPL-My-Project-Is-Open-Source'
+                })
+
+                $.ajax({
+                    dataType: "json",
+                    url: "/api/v1/events/?has_time=false",
+                    success: function(data) {
+                        var target = $('#unscheduled');
+                        $.each(data, function() {
+                            var div = $("<div style='margin:3' class='fc-event'>OLD TEXT</div>");
+                            div.text(this.title);
+                            div.data('event', {
+                                id: this.id,
+                                title: this.title
+                            });
+                            div.draggable({zIndex: 999, revert: true});
+                            target.append(div);
+                        });
+                    },
+                    error: function() {
+                            setStatus("red", "Unable to load unscheduled events");
+                    }
+                });
+            })
+        </script>
+    </head>
+    <body>
+        <div id="status">
+        </div>
+        <div id="unscheduled">
+        </div>
+        <div id="calendar">
+        </div>
+    </body>
+</html>
