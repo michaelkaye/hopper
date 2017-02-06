@@ -13,6 +13,21 @@ logger = logging.getLogger(__name__)
 def health(request):
     return HttpResponse('')
 
+def sched(request):
+    template = loader.get_template('hopper/sched')
+    if request.user.is_authenticated:
+        queryset = Event.objects.all()
+        queryset = queryset.filter(complete=True)
+        queryset = queryset.filter(public=True)
+        context = {
+            'events': queryset
+        }
+        logger.info("Rendering queryset {}".format(queryset))
+        return HttpResponse(template.render(context, request),
+                content_type='text/csv')
+    else:
+        return None
+
 def index(request):
     template = loader.get_template('hopper/index.html')
     logger.info(request.user.is_authenticated)
