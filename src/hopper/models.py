@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.core.validators import validate_comma_separated_integer_list
 class Room(models.Model):
     title = models.CharField(max_length=100)
     size = models.CharField(max_length=100)
@@ -31,8 +31,10 @@ class Event(models.Model):
     );
     runners = models.CharField(max_length=300, null=True, blank=True)
     guidebook_desc = models.TextField(default="", blank=True)
+    online_desc = models.TextField(default="", blank=True)
     requirements = models.TextField(default="", blank=True)
     runners = models.TextField(default="", blank=True)
+    badges = models.TextField(default="", validators=[validate_comma_separated_integer_list], blank=True)
     complete = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
 
