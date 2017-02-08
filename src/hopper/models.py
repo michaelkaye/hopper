@@ -33,8 +33,8 @@ class Event(models.Model):
     guidebook_desc = models.TextField(default="", blank=True)
     online_desc = models.TextField(default="", blank=True)
     requirements = models.TextField(default="", blank=True)
-    runners = models.TextField(default="", blank=True)
-    badges = models.TextField(default="", validators=[validate_comma_separated_integer_list], blank=True)
+    runners = models.CharField(max_length=300, default="", blank=True)
+    badges = models.CharField(max_length=300, default="", validators=[validate_comma_separated_integer_list], blank=True)
     complete = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
 
