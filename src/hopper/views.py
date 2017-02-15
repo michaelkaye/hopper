@@ -31,7 +31,7 @@ def sched(request):
 def index(request):
     template = loader.get_template('hopper/index.html')
     logger.info(request.user.is_authenticated)
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.has_perm('hopper.add_event'): 
         editable='true'
     else:
         editable='false'

@@ -6,10 +6,10 @@ class EventAccessPermission(permissions.BasePermission):
         if request.method in permissions.SAFE_METHODS:
             if object.public:
                 return True
-
-        if request.user.is_authenticated:
-            return True
-
+            if request.user.is_authenticated:
+                return True
+        else:
+            if request.user.is_authenticated and request.user.has_perm('hopper.add_event'):
+                return True
         return False
 
-     
