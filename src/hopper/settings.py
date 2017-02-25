@@ -20,15 +20,9 @@ root = environ.Path(__file__) - 3
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '08hjh256$)#_s(ex^o#hvghqg8u^uj59(&5qp_!ia%&qi#719t'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
-
+DEBUG = os.environ.get('DEBUG', 'on') == 'on'
+SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(32))
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
