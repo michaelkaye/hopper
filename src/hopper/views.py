@@ -21,10 +21,10 @@ def xml(request):
         queryset = queryset.filter(public=True)
         logger.info("Rendering queryset {}".format(queryset))
         # annoyingly we can't do it with a template.
-        string = "<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>"
+        string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
         for event in queryset:
             string = string + _eventfragment(event)
-        string = string + "</day-1></days></events>"
+        string = string + '</day-1></days></events>'
         return HttpResponse(string, content_type='text/plain')
     else:
         return None
