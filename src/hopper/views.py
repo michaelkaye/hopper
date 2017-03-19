@@ -21,9 +21,24 @@ def xml(request):
         logger.info("Rendering queryset {}".format(queryset))
         # annoyingly we can't do it with a template.
         string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
-        for event in queryset:
-            string = string + _eventfragment(event)
-        string = string + '</day-1></days></events>'
+        friday_am = datetime.datetime(2017, 05, 26, 6, 0, 0)
+        saturday_am = datetime.datetime(2017, 05, 27, 6, 0, 0)
+        sunday_am = datetime.datetime(2017, 05, 28, 6, 0, 0)
+        monday_am = datetime.datetime(2017, 05, 29, 6, 0, 0)
+        tuesday_am = datetime.datetime(2017, 05, 30, 6, 0, 0)
+        wednesday_am = datetime.datetime(2017, 05, 31, 6, 0, 0)
+        friday = [event for event in queryset if event.start > friday_am and event.end < saturday_am]
+        saturday = [event for event in queryset if event.start > saturday_am and event.end < sunday_am]
+        sunday = [event for event in queryset if event.start > sunday_am and event.end < monday_am]
+        monday = [event for event in queryset if event.start > monday_am and event.end < tuesday_am]
+        tuesday = [event for event in queryset if event.start > tuesday_am and event.end < wednesday_am]
+        days = [friday, saturday, sunday, monday, tuesday]
+        for x in range(0,len(days)):
+            string = string + "<day-{}>".format(x)
+            for event in days[x]:
+                string = string + _eventfragment(event)
+            string = string + '</day-{}>'.format(x)
+        string = string + '</days></events>'
         return HttpResponse(string, content_type='text/plain')
     else:
         return None
