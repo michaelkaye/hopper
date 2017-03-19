@@ -32,8 +32,8 @@ def _eventfragment(event):
     title = event.title
     abstract = event.guidebook_desc
     persons = event.runners
-    start = event.start.format("%a at %H:%M")
-    end = event.end.format("%H:%M")
+    start = event.start.strftime("%a at %H:%M")
+    end = event.end.strftime("%H:%M")
     time = "{} to {}".format(start, end)
     room = event.resourceId.title
     return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
