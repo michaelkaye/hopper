@@ -14,7 +14,6 @@ def health(request):
     return HttpResponse('')
 
 def xml(request):
-    template = loader.get_template('hopper/xml')
     if request.user.is_authenticated:
         queryset = Event.objects.all()
         queryset = queryset.filter(complete=True)
