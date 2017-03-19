@@ -29,7 +29,7 @@ utc = UTC()
 
 def xml(request):
     queryset = Event.objects.all()
-    queryset = queryset.filter(complete=True)
+    #queryset = queryset.filter(complete=True)
     logger.info("Rendering queryset {}".format(queryset))
     # annoyingly we can't do it with a template.
     string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
@@ -39,11 +39,12 @@ def xml(request):
     monday_am = datetime(2017, 05, 29, 6, 0, 0, tzinfo=utc)
     tuesday_am = datetime(2017, 05, 30, 6, 0, 0, tzinfo=utc)
     wednesday_am = datetime(2017, 05, 31, 6, 0, 0, tzinfo=utc)
-    friday = [event for event in queryset if event.start > friday_am and event.end < saturday_am]
-    saturday = [event for event in queryset if event.start > saturday_am and event.end < sunday_am]
-    sunday = [event for event in queryset if event.start > sunday_am and event.end < monday_am]
-    monday = [event for event in queryset if event.start > monday_am and event.end < tuesday_am]
-    tuesday = [event for event in queryset if event.start > tuesday_am and event.end < wednesday_am]
+    events = [event for event in queryset if event.end]
+    friday = [event for event in events if event.start > friday_am and event.end < saturday_am]
+    saturday = [event for event in events if event.start > saturday_am and event.end < sunday_am]
+    sunday = [event for event in events if event.start > sunday_am and event.end < monday_am]
+    monday = [event for event in events if event.start > monday_am and event.end < tuesday_am]
+    tuesday = [event for event in events if event.start > tuesday_am and event.end < wednesday_am]
     days = [friday, saturday, sunday, monday, tuesday]
     for x in range(0,len(days)):
         string = string + "<day-{}>".format(x)
