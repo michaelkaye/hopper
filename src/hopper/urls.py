@@ -18,13 +18,15 @@ from django.contrib import admin
 
 from hopper import views
 
+from hopper.settings import PASSWORD
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^api/v1/events/$', views.EventList.as_view()),
     url(r'^api/v1/rooms/$', views.RoomList.as_view()),
     url(r'^api/v1/events/(?P<pk>.*)$', views.EventDetail.as_view()),
     url(r'^api/v1/rooms/(?P<pk>.*)$', views.RoomDetail.as_view()),
-    url(r'^export.xml$', views.xml),
+    url(r'^{}/export.xml$'.format(PASSWORD), views.xml),
     url(r'^sched.csv$', views.sched),
     url(r'^$', views.index),
     ]
