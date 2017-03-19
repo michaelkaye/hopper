@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'^api/v1/rooms/$', views.RoomList.as_view()),
     url(r'^api/v1/events/(?P<pk>.*)$', views.EventDetail.as_view()),
     url(r'^api/v1/rooms/(?P<pk>.*)$', views.RoomDetail.as_view()),
+    url(r'^export.xml$', views.xml),
     url(r'^sched.csv$', views.sched),
     url(r'^$', views.index),
     ]
