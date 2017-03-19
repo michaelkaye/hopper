@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, tzinfo, timedelta
 from rest_framework import generics
 from django.http import HttpResponse
 from django.template import loader
@@ -15,6 +15,18 @@ logger = logging.getLogger(__name__)
 def health(request):
     return HttpResponse('')
 
+ZERO = timedelta(0)
+class UTC(tzinfo):
+    def utcoffset(self, dt):
+        return ZERO
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return ZERO
+utc = UTC()
+
 def xml(request):
     if request.GET['password'] == PASSWORD:
         queryset = Event.objects.all()
@@ -22,12 +34,12 @@ def xml(request):
         logger.info("Rendering queryset {}".format(queryset))
         # annoyingly we can't do it with a template.
         string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
-        friday_am = datetime.datetime(2017, 05, 26, 6, 0, 0)
-        saturday_am = datetime.datetime(2017, 05, 27, 6, 0, 0)
-        sunday_am = datetime.datetime(2017, 05, 28, 6, 0, 0)
-        monday_am = datetime.datetime(2017, 05, 29, 6, 0, 0)
-        tuesday_am = datetime.datetime(2017, 05, 30, 6, 0, 0)
-        wednesday_am = datetime.datetime(2017, 05, 31, 6, 0, 0)
+        friday_am = datetime(2017, 05, 26, 6, 0, 0, tzinfo=utc)
+        saturday_am = datetime(2017, 05, 27, 6, 0, 0, tzinfo=utc)
+        sunday_am = datetime(2017, 05, 28, 6, 0, 0, tzinfo=utc)
+        monday_am = datetime(2017, 05, 29, 6, 0, 0, tzinfo=utc)
+        tuesday_am = datetime(2017, 05, 30, 6, 0, 0, tzinfo=utc)
+        wednesday_am = datetime(2017, 05, 31, 6, 0, 0, tzinfo=utc)
         friday = [event for event in queryset if event.start > friday_am and event.end < saturday_am]
         saturday = [event for event in queryset if event.start > saturday_am and event.end < sunday_am]
         sunday = [event for event in queryset if event.start > sunday_am and event.end < monday_am]
