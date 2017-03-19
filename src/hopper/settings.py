@@ -20,6 +20,7 @@ root = environ.Path(__file__) - 3
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
+PASSWORD = os.environ.get('PASSWORD', os.urandom(32))
 DEBUG = os.environ.get('DEBUG', 'on') == 'on'
 SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(32))
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')

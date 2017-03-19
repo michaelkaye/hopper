@@ -4,6 +4,7 @@ from django.template import loader
 
 from hopper.models import Event, Room
 from hopper.serializers import EventSerializer, RoomSerializer
+from hopper.settings import PASSWORD
 from hopper.permissions import EventAccessPermission
 
 import logging
@@ -14,10 +15,9 @@ def health(request):
     return HttpResponse('')
 
 def xml(request):
-    if request.user.is_authenticated:
+    if request.GET['password'] == PASSWORD:
         queryset = Event.objects.all()
         queryset = queryset.filter(complete=True)
-        queryset = queryset.filter(public=True)
         logger.info("Rendering queryset {}".format(queryset))
         # annoyingly we can't do it with a template.
         string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
@@ -27,7 +27,6 @@ def xml(request):
         return HttpResponse(string, content_type='text/plain')
     else:
         return None
-
 def _eventfragment(event):
     title = event.title
     abstract = event.guidebook_desc
