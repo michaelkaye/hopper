@@ -4,6 +4,7 @@ hopper:
     - HOPPER_ALLOWED_HOSTS=${HOPPER_ALLOWED_HOSTS}
     - HOPPER_SECRET_KEY=${HOPPER_SECRET_KEY}
     - HOPPER_DEBUG=${HOPPER_DEBUG}
+    - HOPPER_PASSWORD=${HOPPER_PASSWORD}
   volumes:
     - .:/home/hopper/code
   command: ./bin/run
