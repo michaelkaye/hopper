@@ -1,9 +1,9 @@
 hopper:
   build: .
   environment: 
-    - ALLOWED_HOSTS=${ALLOWED_HOSTS}
-    - SECRET_KEY=${SECRET_KEY}
-    - DEBUG=${DEBUG}
+    - HOPPER_ALLOWED_HOSTS=${HOPPER_ALLOWED_HOSTS}
+    - HOPPER_SECRET_KEY=${HOPPER_SECRET_KEY}
+    - HOPPER_DEBUG=${HOPPER_DEBUG}
   volumes:
     - .:/home/hopper/code
   command: ./bin/run

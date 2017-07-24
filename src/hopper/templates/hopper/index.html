@@ -69,7 +69,7 @@ function updateEvent(event, revertFunc, successFunc) {
                     drop: function(date, jsEvent, ui, resourceId) {
                         $(this).remove()
                     },
-                    droppable: true,
+		    droppable: {{ editable }},
                     events: {
                         url: '/api/v1/events/?has_time=true'
                     },

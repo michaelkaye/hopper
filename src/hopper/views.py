@@ -15,7 +15,7 @@ def health(request):
 
 def sched(request):
     template = loader.get_template('hopper/sched')
-    if request.user.is_authenticated:
+    if request.user.has_perm('hopper.download'):
         queryset = Event.objects.all()
         queryset = queryset.filter(complete=True)
         queryset = queryset.filter(public=True)
@@ -28,10 +28,10 @@ def sched(request):
     else:
         return None
 
+
 def index(request):
     template = loader.get_template('hopper/index.html')
-    logger.info(request.user.is_authenticated)
-    if request.user.is_authenticated and request.user.has_perm('hopper.add_event'): 
+    if request.user.has_perm('hopper.add_event'): 
         editable='true'
     else:
         editable='false'
