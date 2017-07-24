@@ -20,9 +20,9 @@ root = environ.Path(__file__) - 3
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-DEBUG = os.environ.get('DEBUG', 'on') == 'on'
-SECRET_KEY = os.environ.get('SECRET_KEY', os.urandom(32))
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost').split(',')
+DEBUG = os.environ.get('HOPPER_DEBUG', 'on') == 'on'
+SECRET_KEY = os.environ.get('HOPPER_SECRET_KEY', os.urandom(32))
+ALLOWED_HOSTS = os.environ.get('HOPPER_ALLOWED_HOSTS', 'localhost').split(',')
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'hopper.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(os.path.dirname(BASE_DIR), 'db.sqlite3'),
     }
 }
 

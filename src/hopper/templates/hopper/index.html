@@ -1,11 +1,13 @@
 <html>
     <head>
         <link rel='stylesheet' href='/static/hopper/scheduler.min.css' />
+        <link rel='stylesheet' href='/static/hopper/lib/jquery.qtip.css' />
         <link rel='stylesheet' href='/static/hopper/lib/fullcalendar.min.css' />
         <script src='/static/hopper/lib/moment.min.js'></script>
         <script src='/static/hopper/lib/jquery.min.js'></script>
         <script src='/static/hopper/lib/jquery-ui.min.js'></script>
         <script src='/static/hopper/lib/fullcalendar.min.js'></script>
+        <script src='/static/hopper/lib/jquery.qtip.js'></script>
         <script src='/static/hopper/scheduler.min.js'></script>
         <script>
 
@@ -31,6 +33,28 @@ function updateEvent(event, revertFunc, successFunc) {
         success: function() { setStatus('green', "Saved event " +event.title); successFunc() },
         error: function() { setStatus('red', "Unable to save event "+event.title); revertFunc() }
     });
+}
+function addQtip(event, element) {
+    element.qtip({
+        content: {
+            title: event.title,
+	    text: '<div><div><h3>Online Description</h3>'+event.online_desc+'</div><div><h3>Runners</h3>'+event.runners+'</div>[<a href="/admin/hopper/event/'+event.id+'/change">change</a>]</div>'
+        },
+	position: {
+	    my: 'top center',
+	    at: 'bottom center'
+        },
+    style: {
+ 	classes: 'qtip-light'
+    },
+    show: {
+        solo: true
+    },
+    hide: {
+	fixed: true,
+        delay: 300
+    }
+  });
 }
 
             $(document).ready(function() {
@@ -69,12 +93,11 @@ function updateEvent(event, revertFunc, successFunc) {
                     drop: function(date, jsEvent, ui, resourceId) {
                         $(this).remove()
                     },
-                    droppable: true,
+		    droppable: {{ editable }},
                     events: {
                         url: '/api/v1/events/?has_time=true'
                     },
                     eventDataTransform: function(event) {
-                        event.url = '/admin/hopper/event/'+event.id+'/change';
                         event.backgroundColor = event.track
                         return event;
                     },
@@ -89,6 +112,9 @@ function updateEvent(event, revertFunc, successFunc) {
                         }
                         updateEvent(event, revertFunc, function(){})
                     },
+		    eventRender: function (event, element) {
+			    addQtip(event, element)
+		    },
                     eventResize: function (event, delta, revertFunc) {
                         updateEvent(event, revertFunc, function(){})
                     },
@@ -119,6 +145,7 @@ function updateEvent(event, revertFunc, successFunc) {
                                 id: this.id,
                                 title: this.title
                             });
+			    addQtip(this, div);
                             div.draggable({zIndex: 999, revert: true});
                             target.append(div);
                         });
