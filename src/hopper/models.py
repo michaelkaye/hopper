@@ -1,5 +1,13 @@
 from django.db import models
 from django.core.validators import validate_comma_separated_integer_list
+from django_enumfield import enum
+
+class StatusTypes(enum.Enum):
+   DRAFT = 0
+   REVIEW = 1
+   COMPLETED = 2
+
+
 class Room(models.Model):
     title = models.CharField(max_length=100)
     size = models.CharField(max_length=100)
@@ -30,12 +38,15 @@ class Event(models.Model):
         null=True,
     );
     runners = models.CharField(max_length=300, null=True, blank=True)
-    guidebook_desc = models.TextField(default="", blank=True)
-    online_desc = models.TextField(default="", blank=True)
+    desc = models.TextField(default="", blank=True)
     requirements = models.TextField(default="", blank=True)
+    internal = models.TextField(default="", blank=True)
+    status = enum.EnumField(StatusTypes, default=StatusTypes.DRAFT)
+    event_organiser = models.ForeignKey(settings.AUTH_USER_MODEL)
+    last_modified = models.DateTimeField(auto_now=True)
+    last_confirmed = models.DateTimeField(null=True, blank=True, editable=False)
     runners = models.CharField(max_length=300, default="", blank=True)
     badges = models.CharField(max_length=300, default="", validators=[validate_comma_separated_integer_list], blank=True)
-    complete = models.BooleanField(default=False)
     public = models.BooleanField(default=False)
 
     def __str__(self):
