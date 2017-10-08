@@ -38,7 +38,7 @@ function addQtip(event, element) {
     element.qtip({
         content: {
             title: event.title,
-	    text: '<div><div><h3>Online Description</h3>'+event.online_desc+'</div><div><h3>Runners</h3>'+event.runners+'</div>[<a href="/admin/hopper/event/'+event.id+'/change">change</a>]</div>'
+	    text: '<div><div><h3>Description</h3>'+event.desc+'</div><div><h3>Runners</h3>'+event.runners+'</div>[<a href="/admin/hopper/event/'+event.id+'/change">change</a>]</div>'
         },
 	position: {
 	    my: 'top center',
