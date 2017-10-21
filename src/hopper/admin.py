@@ -12,6 +12,7 @@ class EventAdmin(admin.ModelAdmin):
                 'fields': ('start', 'end', 'resourceId')
             })
         )
+    list_display = ('title', 'date_modified', 'date_completed')
     list_filter = ('track', 'resourceId', 'status', 'public')
     search_fields = ['title', 'runners', 'track__title', 'resourceId__title']
     formfield_overrides = {

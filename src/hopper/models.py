@@ -1,8 +1,8 @@
 from django.db import models
 from django.core.validators import validate_comma_separated_integer_list
 from django.conf import settings as d_settings
-
-
+from django.dispatch import receiver
+from datetime import datetime
 
 class Room(models.Model):
     title = models.CharField(max_length=100)
@@ -50,7 +50,7 @@ class EventCompleted(EventCommonInfo):
     def list_manual_concrete_fields(cls):
         fields = []
         for field in cls._meta.get_fields():
-            if field.concrete and not field.auto_created:
+            if field.concrete and not field.auto_created and field.name != 'date_modified':
                 fields.append(field)
         return fields
 
@@ -85,7 +85,9 @@ class Event(EventCommonInfo):
        )
     status = models.CharField(max_length=1, choices=STATE_CHOICES, default='D')
     public = models.BooleanField(default=False)
-    event_completed = models.ForeignKey(EventCompleted, null=True, editable=False, on_delete=models.CASCADE)
+    event_completed = models.ForeignKey(EventCompleted, null=True, editable=False, on_delete=models.SET_NULL)
+    date_modified = models.DateTimeField(auto_now=True)
+    date_completed = models.DateTimeField(editable=False, null=True)
 
     __old_status = None
 
@@ -97,17 +99,18 @@ class Event(EventCommonInfo):
         if self.status == 'C':
             if self.__old_status != 'C':
                 self.event_completed = EventCompleted.write_from(self)
+                self.date_completed = datetime.now()
             else:
                 if self.event_completed.compare(self):
                     self.status = 'A'
                     self.__old_status = self.status
         super(Event, self).save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-        super(Event, self).delete(*args, **kwargs)
-        if self.event_completed:
-            self.event_completed.delete()
-
     def __str__(self):
         return "{}".format(self.title)
+
+@receiver(models.signals.post_delete, sender=Event)
+def delete_parent(sender, **kwargs):
+    if kwargs['instance'].event_completed:
+        kwargs['instance'].event_completed.delete()
 

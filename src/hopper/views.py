@@ -17,7 +17,7 @@ def sched(request):
     template = loader.get_template('hopper/sched')
     if request.user.has_perm('hopper.download'):
         queryset = Event.objects.all()
-        queryset = queryset.filter(complete=True)
+        queryset = queryset.filter(status='C')
         queryset = queryset.filter(public=True)
         context = {
             'events': queryset
