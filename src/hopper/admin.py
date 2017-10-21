@@ -16,8 +16,8 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ('track', 'resourceId', 'status', 'public')
     search_fields = ['title', 'runners', 'track__title', 'resourceId__title']
     formfield_overrides = {
-        models.CharField: {'widget': TextInput(attrs={'size':40})},
-        models.TextField: {'widget': Textarea(attrs={'rows': 2, 'cols':40})}
+        models.CharField: {'widget': TextInput(attrs={'size':60})},
+        models.TextField: {'widget': Textarea(attrs={'rows': 5, 'cols':60})}
     }
 
 admin.site.register(Track)
