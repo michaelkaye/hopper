@@ -66,10 +66,10 @@ class EventCompleted(EventCommonInfo):
         return complete
             
     def compare(self, event):
-        differences = []
+        differences = set()
         for field in self.list_manual_concrete_fields():
             if getattr(self,field.name) != getattr(event,field.name):
-                differences.append(field.name)
+                differences.add(field.name)
         return differences
 
     def __str__(self):

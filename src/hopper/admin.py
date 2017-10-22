@@ -6,7 +6,7 @@ from django.db import models
 class EventAdmin(admin.ModelAdmin):
     fieldsets = (
             (None, {
-                'fields': ('title', 'track', 'event_organiser', 'runners', 'badges', 'desc', 'requirements', 'internal', 'status', 'public')
+                'fields': ('title', 'track', 'event_organiser', 'runners', 'badges', 'desc', 'requirements', 'internal', ('status', 'public'))
             }),
             ('Time and Room', {
                 'fields': ('start', 'end', 'resourceId')
