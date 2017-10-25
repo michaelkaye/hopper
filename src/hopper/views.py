@@ -1,6 +1,7 @@
 from rest_framework import generics
 from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader
+from django.shortcuts import get_object_or_404
 
 from hopper.models import Event, Room, EventCompleted
 from hopper.serializers import EventSerializer, RoomSerializer
@@ -29,17 +30,23 @@ def sched(request):
         return None
 
 def compare_view(request, pk):
+    _datetime_format = "%d %b, %A %H:%M"
     template = loader.get_template('hopper/compare.html')
     if request.user.is_authenticated:
-        event = Event.objects.get(pk=pk)
-        event_completed = event.event_completed
+        event = get_object_or_404(Event, pk=pk)
+        event_completed = get_object_or_404(EventCompleted, pk=event.event_completed_id)
         diff = event_completed.compare(event)
         rows = []
         for field in EventCompleted.list_manual_concrete_fields():
-            row = {}
-            row['name'] = field.name
-            row['event_val'] = getattr(event,field.name)
-            row['completed_val'] = getattr(event_completed,field.name)
+            name = field.name
+            try:
+                event_val = getattr(event,field.name).strftime(_datetime_format)
+            except AttributeError:
+                event_val = getattr(event,field.name)
+                completed_val = getattr(event_completed,field.name)
+            else:
+                completed_val = getattr(event_completed,field.name).strftime(_datetime_format)
+            row = {'name' : name, 'event_val' : event_val, 'completed_val' : completed_val}
             if field.name in diff:
                 row['is_diff'] = True
             rows.append(row)

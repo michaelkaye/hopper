@@ -13,7 +13,7 @@ class EventAdmin(admin.ModelAdmin):
             })
         )
     list_display = ('title', 'date_modified', 'date_completed')
-    list_filter = ('track', 'resourceId', 'status', 'public')
+    list_filter = ('track', 'resourceId', 'status', 'public', 'event_organiser')
     search_fields = ['title', 'runners', 'track__title', 'resourceId__title']
     formfield_overrides = {
         models.CharField: {'widget': TextInput(attrs={'size':60})},
