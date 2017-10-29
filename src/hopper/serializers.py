@@ -9,7 +9,7 @@ class EventSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = Event
-        fields = ("id", "title", "start", "end", "online_desc", "runners", "resourceId", "track")
+        fields = ("id", "title", "start", "end", "desc", "runners", "resourceId", "track")
 
 class RoomSerializer(serializers.ModelSerializer):
     class Meta:

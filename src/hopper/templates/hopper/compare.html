@@ -1,0 +1,35 @@
+<html>
+<head>
+<style>
+table, th, td {
+    border: 1px solid black;
+}
+th {
+    text-align: left;
+    background-color: black;
+    color: white;
+}
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+</style>
+</head>
+
+<body>
+<table style="width:100%">
+    <tr>
+        <th>Field</th>
+        <th>Current Version</th>
+        <th>Completed Version</th>
+    </tr>
+    <tr>
+{% for row in comparison %}
+    <tr>
+        <td><b>{{ row.name }}</b></td>
+        <td><pre>{{ row.event_val }}</pre></td>
+        <td><pre>{% if row.is_diff %}{{ row.completed_val }}{% else %} -- {% endif %}</pre></td>
+    </tr>
+{% endfor %}
+</table>
+</body>
+</html>

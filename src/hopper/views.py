@@ -1,8 +1,9 @@
 from rest_framework import generics
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader
+from django.shortcuts import get_object_or_404
 
-from hopper.models import Event, Room
+from hopper.models import Event, Room, EventCompleted
 from hopper.serializers import EventSerializer, RoomSerializer
 from hopper.permissions import EventAccessPermission
 
@@ -17,7 +18,7 @@ def sched(request):
     template = loader.get_template('hopper/sched')
     if request.user.has_perm('hopper.download'):
         queryset = Event.objects.all()
-        queryset = queryset.filter(complete=True)
+        queryset = queryset.filter(status='C')
         queryset = queryset.filter(public=True)
         context = {
             'events': queryset
@@ -28,6 +29,31 @@ def sched(request):
     else:
         return None
 
+def compare_view(request, pk):
+    _datetime_format = "%d %b, %A %H:%M"
+    template = loader.get_template('hopper/compare.html')
+    if request.user.is_authenticated:
+        event = get_object_or_404(Event, pk=pk)
+        event_completed = get_object_or_404(EventCompleted, pk=event.event_completed_id)
+        diff = event_completed.compare(event)
+        rows = []
+        for field in EventCompleted.list_manual_concrete_fields():
+            name = field.name
+            try:
+                event_val = getattr(event,field.name).strftime(_datetime_format)
+            except AttributeError:
+                event_val = getattr(event,field.name)
+                completed_val = getattr(event_completed,field.name)
+            else:
+                completed_val = getattr(event_completed,field.name).strftime(_datetime_format)
+            row = {'name' : name, 'event_val' : event_val, 'completed_val' : completed_val}
+            if field.name in diff:
+                row['is_diff'] = True
+            rows.append(row)
+        context = {'comparison': rows}
+        return HttpResponse(template.render(context, request))
+    else:
+        return HttpResponseForbidden("Please log in via the admin page first")
 
 def index(request):
     template = loader.get_template('hopper/index.html')
