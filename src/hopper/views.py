@@ -62,7 +62,7 @@ def index(request):
     else:
         editable='false'
     context = {
-        'defaultDate': '2017-05-27',
+        'defaultDate': '2018-05-26',
         'editable': editable
     }
     return HttpResponse(template.render(context, request))
