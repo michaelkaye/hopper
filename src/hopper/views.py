@@ -29,6 +29,23 @@ def sched(request):
     else:
         return None
 
+def confirm_emails(request):
+    template = loader.get_template('hopper/confirm_emails.html')
+    if request.user.has_perm('hopper.download'):
+        queryset = Event.objects.all()
+        queryset = queryset.exclude(badges='')
+        queryset = queryset.exclude(status='C')
+        logger.info("Rendering queryset {}".format(queryset))
+        events_set = list(queryset)
+        for index, entry in enumerate(events_set):
+            events_set[index].badges = entry.badges.split(',')
+        context = {
+            'events': events_set
+        }
+        return HttpResponse(template.render(context, request))
+    else:
+        return None
+
 def compare_view(request, pk):
     _datetime_format = "%d %b, %A %H:%M"
     template = loader.get_template('hopper/compare.html')
