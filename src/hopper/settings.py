@@ -23,6 +23,7 @@ root = environ.Path(__file__) - 3
 DEBUG = os.environ.get('HOPPER_DEBUG', 'on') == 'on'
 SECRET_KEY = os.environ.get('HOPPER_SECRET_KEY', os.urandom(32))
 ALLOWED_HOSTS = os.environ.get('HOPPER_ALLOWED_HOSTS', 'localhost').split(',')
+HOPPER_PASSWORD = os.environ.get('HOPPER_PASSWORD', os.urandom(32))
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,

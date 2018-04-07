@@ -1,3 +1,4 @@
+from datetime import datetime, tzinfo, timedelta
 from rest_framework import generics
 from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader
@@ -5,6 +6,7 @@ from django.shortcuts import get_object_or_404
 
 from hopper.models import Event, Room, EventCompleted
 from hopper.serializers import EventSerializer, RoomSerializer
+from hopper.settings import HOPPER_PASSWORD
 from hopper.permissions import EventAccessPermission
 
 import logging
@@ -13,6 +15,54 @@ logger = logging.getLogger(__name__)
 
 def health(request):
     return HttpResponse('')
+
+ZERO = timedelta(0)
+class UTC(tzinfo):
+    def utcoffset(self, dt):
+        return ZERO
+
+    def tzname(self, dt):
+        return "UTC"
+
+    def dst(self, dt):
+        return ZERO
+utc = UTC()
+
+def xml(request):
+    queryset = Event.objects.all()
+    queryset = queryset.exclude(track__title='UNAVAILABLE').exclude(track__tilte='Internal')
+    logger.info("Rendering queryset {}".format(queryset))
+    # annoyingly we can't do it with a template.
+    string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
+    friday_am = datetime(2018, 05, 25, 6, 0, 0, tzinfo=utc)
+    saturday_am = datetime(2018, 05, 26, 6, 0, 0, tzinfo=utc)
+    sunday_am = datetime(2018, 05, 27, 6, 0, 0, tzinfo=utc)
+    monday_am = datetime(2018, 05, 28, 6, 0, 0, tzinfo=utc)
+    tuesday_am = datetime(2018, 05, 29, 6, 0, 0, tzinfo=utc)
+    wednesday_am = datetime(2018, 05, 30, 6, 0, 0, tzinfo=utc)
+    events = [event for event in queryset if event.end]
+    friday = [event for event in events if event.start > friday_am and event.end < saturday_am]
+    saturday = [event for event in events if event.start > saturday_am and event.end < sunday_am]
+    sunday = [event for event in events if event.start > sunday_am and event.end < monday_am]
+    monday = [event for event in events if event.start > monday_am and event.end < tuesday_am]
+    tuesday = [event for event in events if event.start > tuesday_am and event.end < wednesday_am]
+    days = [friday, saturday, sunday, monday, tuesday]
+    for x in range(0,len(days)):
+        string = string + "<day-{}>".format(x)
+        for event in days[x]:
+            string = string + _eventfragment(event)
+        string = string + '</day-{}>'.format(x)
+    string = string + '</days></events>'
+    return HttpResponse(string, content_type='text/plain')
+def _eventfragment(event):
+    title = event.title
+    abstract = event.desc
+    persons = event.runners
+    start = event.start.strftime("%a at %H:%M")
+    end = event.end.strftime("%H:%M")
+    time = "{} to {}".format(start, end)
+    room = event.resourceId.title
+    return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
 
 def sched(request):
     template = loader.get_template('hopper/sched')
