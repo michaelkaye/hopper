@@ -61,7 +61,7 @@ def _eventfragment(event):
     title = escape(event.title)
     if ("---" in event.desc):
         parts = event.desc.split("---",2);
-        abstract = '<abstract>'+escape(parts[0][:-2])+"</abstract>\u2029<nonsense>"+escape(parts[1][2:])+'</nonsense>';
+        abstract = '<abstract>'+escape(parts[0][:-2])+u"</abstract>\u2029<nonsense>"+escape(parts[1][2:])+'</nonsense>';
     else:
         abstract = '<abstract>'+escape(event.desc)+'</abstract>';
     persons = escape(event.runners)
