@@ -10,6 +10,7 @@ from hopper.settings import HOPPER_PASSWORD
 from hopper.permissions import EventAccessPermission
 
 import logging
+import pytz
 
 logger = logging.getLogger(__name__)
 
@@ -27,10 +28,12 @@ class UTC(tzinfo):
     def dst(self, dt):
         return ZERO
 utc = UTC()
+london = pytz.timezone("europe/london");
 
 def xml(request):
     queryset = Event.objects.all()
     queryset = queryset.exclude(track__title='UNAVAILABLE').exclude(track__title='Internal')
+    queryset = queryset.sort(start);
     logger.info("Rendering queryset {}".format(queryset))
     # annoyingly we can't do it with a template.
     string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days>'
@@ -58,8 +61,8 @@ def _eventfragment(event):
     title = escape(event.title)
     abstract = escape(event.desc)
     persons = escape(event.runners)
-    start = event.start.strftime("%a at %H:%M")
-    end = event.end.strftime("%H:%M")
+    start = event.start.astimezone(bst)strftime("%a at %H:%M")
+    end = event.end.astimezone(bst).strftime("%H:%M")
     time = "{} to {}".format(start, end)
     room = escape(event.resourceId.title)
     try:
