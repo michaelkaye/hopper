@@ -30,7 +30,7 @@ utc = UTC()
 
 def xml(request):
     queryset = Event.objects.all()
-    #queryset = queryset.filter(complete=True)
+    queryset = queryset.exclude(track__title='UNAVAILABLE').exclude(track__tilte='Internal')
     logger.info("Rendering queryset {}".format(queryset))
     # annoyingly we can't do it with a template.
     string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
