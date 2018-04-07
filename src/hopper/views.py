@@ -62,8 +62,11 @@ def _eventfragment(event):
     end = event.end.strftime("%H:%M")
     time = "{} to {}".format(start, end)
     room = event.resourceId.title
-    return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
-
+    try:
+        return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
+    except UnicodeEncodeError:
+        log.error(event);
+        return "<event><!-- Event {} failed to encode --></event>".format(event.pk);
 def sched(request):
     template = loader.get_template('hopper/sched')
     if request.user.has_perm('hopper.download'):
