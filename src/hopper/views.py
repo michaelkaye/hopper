@@ -63,7 +63,7 @@ def _eventfragment(event):
     time = "{} to {}".format(start, end)
     room = escape(event.resourceId.title)
     try:
-        return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
+        return "<event><title>{}</title>\u2029<timedate>{}</timedate>\u2029<abstract>{}</abstract>\u2029<persons>{}</persons>\u2029<room>{}</room>\u2029</event>".format(title, time, abstract, persons, room)
     except UnicodeEncodeError:
         logger.error(event);
         return "<event><!-- Event {} failed to encode --></event>".format(event.pk);
