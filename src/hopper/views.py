@@ -3,7 +3,7 @@ from rest_framework import generics
 from django.http import HttpResponse, HttpResponseForbidden
 from django.template import loader
 from django.shortcuts import get_object_or_404
-
+from xml.sax.saxutils import escape
 from hopper.models import Event, Room, EventCompleted
 from hopper.serializers import EventSerializer, RoomSerializer
 from hopper.settings import HOPPER_PASSWORD
@@ -33,7 +33,7 @@ def xml(request):
     queryset = queryset.exclude(track__title='UNAVAILABLE').exclude(track__title='Internal')
     logger.info("Rendering queryset {}".format(queryset))
     # annoyingly we can't do it with a template.
-    string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days><day-1>'
+    string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days>'
     friday_am = datetime(2018, 05, 25, 6, 0, 0, tzinfo=utc)
     saturday_am = datetime(2018, 05, 26, 6, 0, 0, tzinfo=utc)
     sunday_am = datetime(2018, 05, 27, 6, 0, 0, tzinfo=utc)
@@ -55,13 +55,13 @@ def xml(request):
     string = string + '</days></events>'
     return HttpResponse(string, content_type='text/plain')
 def _eventfragment(event):
-    title = event.title
-    abstract = event.desc
-    persons = event.runners
+    title = escape(event.title)
+    abstract = escape(event.desc)
+    persons = escape(event.runners)
     start = event.start.strftime("%a at %H:%M")
     end = event.end.strftime("%H:%M")
     time = "{} to {}".format(start, end)
-    room = event.resourceId.title
+    room = escape(event.resourceId.title)
     try:
         return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
     except UnicodeEncodeError:
