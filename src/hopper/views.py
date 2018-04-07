@@ -28,7 +28,7 @@ class UTC(tzinfo):
     def dst(self, dt):
         return ZERO
 utc = UTC()
-london = pytz.timezone("europe/london");
+london = pytz.timezone("Europe/London");
 
 def xml(request):
     queryset = Event.objects.all()
