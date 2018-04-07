@@ -59,14 +59,18 @@ def xml(request):
     return HttpResponse(string, content_type='text/plain')
 def _eventfragment(event):
     title = escape(event.title)
-    abstract = escape(event.desc)
+    if ("---" in event.desc):
+        parts = event.desc.split("---",2);
+        abstract = '<abstract>'+escape(parts[0][:-2])+u"</abstract>\u2029<nonsense>"+escape(parts[1][2:])+'</nonsense>';
+    else:
+        abstract = '<abstract>'+escape(event.desc)+'</abstract>';
     persons = escape(event.runners)
     start = event.start.astimezone(london).strftime("%a at %H:%M")
     end = event.end.astimezone(london).strftime("%H:%M")
     time = "{} to {}".format(start, end)
     room = escape(event.resourceId.title)
     try:
-        return u"<event><title>{}</title>\u2029<timedate>{}</timedate>\u2029<abstract>{}</abstract>\u2029<persons>{}</persons>\u2029<room>{}</room>\u2029</event>".format(title, time, abstract, persons, room)
+        return u"<event><title>{}</title>\u2029<timedate>{}</timedate>\u2029{}\u2029<persons>{}</persons>\u2029<room>{}</room>\u2029</event>".format(title, time, abstract, persons, room)
     except UnicodeEncodeError:
         logger.error(event);
         return "<event><!-- Event {} failed to encode --></event>".format(event.pk);
