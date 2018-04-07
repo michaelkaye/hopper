@@ -61,7 +61,7 @@ def _eventfragment(event):
     title = escape(event.title)
     abstract = escape(event.desc)
     persons = escape(event.runners)
-    start = event.start.astimezone(bst)strftime("%a at %H:%M")
+    start = event.start.astimezone(bst).strftime("%a at %H:%M")
     end = event.end.astimezone(bst).strftime("%H:%M")
     time = "{} to {}".format(start, end)
     room = escape(event.resourceId.title)
