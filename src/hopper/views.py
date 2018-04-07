@@ -59,12 +59,11 @@ def xml(request):
     return HttpResponse(string, content_type='text/plain')
 def _eventfragment(event):
     title = escape(event.title)
-    if ('---' in event.desc) {
+    if ('---' in event.desc):
         parts = event.desc.split('---',2);
         abstract = '<abstract>'+escape(parts[0])+'</abstract>\u2029<nonsense>'+escape(parts[1])+'</nonsense>';
-    } else {
+    else:
         abstract = '<abstract>'+escape(event.desc)+'</abstract>';
-    }
     persons = escape(event.runners)
     start = event.start.astimezone(london).strftime("%a at %H:%M")
     end = event.end.astimezone(london).strftime("%H:%M")
