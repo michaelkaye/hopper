@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>Confirm Events {% now "Y" %}</title>
+<style>p {font-size: 80%;} ul {font-size: 80%;} hr { display: block; margin-top: 0.5em;     margin-bottom: 0.5em; margin-left: auto; margin-right: auto; border-style: inset; border-width: 1px; } table, tr, td { border: 1px solid black;     border-collapse: collapse; padding: 3px;}</style>
+</head>\n
+<body>
+<div>
+{% for row in events %}
+{% for id in row.badges %}
+<h1>{0[{{ id }}_EMAIL]}</h1>
+{% endfor %}
+<h1>CFz2018 Event: {{ row.title }}</h1>
+    <p>Hello</p>
+    <p>Thanks for offering to run an event at CFz 2018. While you've probably had some email conversations before now about your event, this email represents the scheduling system's idea of exactly what and how your event should be represented.</p>
+    <p>If you're happy with the below please reply to say so and we'll publish this event on the schedule at https://confuzzled2018.sched.com/</p>
+    <p>Our deadline for changes is Friday, the 27th April - after that events may not make it into the conbook.</p>
+    <hr>
+    <p>We think that your event is the following:</p>
+    <p><b>Title:</b> {{ row.title }}</p>
+    <p><b>Start:</b> {{ row.start|date:"d/m/Y H:i" }}</p>
+    <p><b>End:</b> {{ row.end|date:"d/m/Y H:i" }}</p>
+    <p><b>Runners (description for conbook, etc):</b> {{ row.runners }}</p>
+    <p><b>Room:</b> {{ row.resourceId.title }}</p>
+    <p><b>Track:</b> {{ row.track.title }}</p>
+    <p><b>Description:</b></p>
+    {{ row.desc|linebreaks }}
+    <p><b>Requirements:</b></p>
+    {{ row.requirements|linebreaks }}
+    <hr>
+    <p>If there's anything in the above you're unsure about or disagree with them please reply to this email with questions. If you're not expecting this email *please* get back in touch with us ASAP so we can work out what's going on.</p>
+    <p>Thanks</p>
+    <p>The CFz Events System</p>
+</div><div style='page-break-after: always'> </div>
+{% endfor %}
+</body></html>
