@@ -65,7 +65,7 @@ def _eventfragment(event):
     try:
         return "<event><title>{}</title><timedate>{}</timedate><abstract>{}</abstract><persons>{}</persons><room>{}</room></event>".format(title, time, abstract, persons, room)
     except UnicodeEncodeError:
-        log.error(event);
+        logger.error(event);
         return "<event><!-- Event {} failed to encode --></event>".format(event.pk);
 def sched(request):
     template = loader.get_template('hopper/sched')
