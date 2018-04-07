@@ -26,5 +26,6 @@ urlpatterns = [
     url(r'^api/v1/rooms/(?P<pk>.*)$', views.RoomDetail.as_view()),
     url(r'^compare/(?P<pk>.*)$', views.compare_view, name='compare-complete'),
     url(r'^sched.csv$', views.sched),
+    url(r'^confirm.html$',views.confirm_emails),
     url(r'^$', views.index),
     ]
