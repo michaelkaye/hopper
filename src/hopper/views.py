@@ -136,12 +136,12 @@ def compare_view(request, pk):
         for field in EventCompleted.list_manual_concrete_fields():
             name = field.name
             try:
-                event_val = getattr(event,field.name).strftime(_datetime_format)
+                event_val = getattr(event,field.name).astimezone(london).strftime(_datetime_format)
             except AttributeError:
                 event_val = getattr(event,field.name)
                 completed_val = getattr(event_completed,field.name)
             else:
-                completed_val = getattr(event_completed,field.name).strftime(_datetime_format)
+                completed_val = getattr(event_completed,field.name).astimezone(london).strftime(_datetime_format)
             row = {'name' : name, 'event_val' : event_val, 'completed_val' : completed_val}
             if field.name in diff:
                 row['is_diff'] = True
