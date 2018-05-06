@@ -21,10 +21,8 @@ ZERO = timedelta(0)
 class UTC(tzinfo):
     def utcoffset(self, dt):
         return ZERO
-
     def tzname(self, dt):
         return "UTC"
-
     def dst(self, dt):
         return ZERO
 utc = UTC()
@@ -37,12 +35,12 @@ def xml(request):
     logger.info("Rendering queryset {}".format(queryset))
     # annoyingly we can't do it with a template.
     string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><events><days>'
-    friday_am = datetime(2018, 05, 25, 6, 0, 0, tzinfo=utc)
-    saturday_am = datetime(2018, 05, 26, 6, 0, 0, tzinfo=utc)
-    sunday_am = datetime(2018, 05, 27, 6, 0, 0, tzinfo=utc)
-    monday_am = datetime(2018, 05, 28, 6, 0, 0, tzinfo=utc)
-    tuesday_am = datetime(2018, 05, 29, 6, 0, 0, tzinfo=utc)
-    wednesday_am = datetime(2018, 05, 30, 6, 0, 0, tzinfo=utc)
+    friday_am = datetime(2018, 5, 25, 6, 0, 0, tzinfo=utc)
+    saturday_am = datetime(2018, 5, 26, 6, 0, 0, tzinfo=utc)
+    sunday_am = datetime(2018, 5, 27, 6, 0, 0, tzinfo=utc)
+    monday_am = datetime(2018, 5, 28, 6, 0, 0, tzinfo=utc)
+    tuesday_am = datetime(2018, 5, 29, 6, 0, 0, tzinfo=utc)
+    wednesday_am = datetime(2018, 5, 30, 6, 0, 0, tzinfo=utc)
     events = [event for event in queryset if event.end]
     friday = [event for event in events if event.start > friday_am and event.end < saturday_am]
     saturday = [event for event in events if event.start > saturday_am and event.end < sunday_am]
@@ -105,6 +103,27 @@ def confirm_emails(request):
         return HttpResponse(template.render(context, request))
     else:
         return None
+
+def runner_instructions(request):
+    template = loader.get_template('hopper/runner_instructions.html')
+    if request.user.has_perm('hopper.download'):
+        queryset = Event.objects.all()
+        queryset = queryset.exclude(badges='')
+        entries = {}
+        for e in queryset:
+            for b in map(int,e.badges.split(',')):
+                if b in entries:
+                    entries[b].append(e)
+                else:
+                    entries[b] = [e]
+        output = sorted(entries.items())
+        context = {
+            'runners': output
+        }
+        return HttpResponse(template.render(context, request))
+    else:
+        return None
+        
 
 def compare_view(request, pk):
     _datetime_format = "%d %b, %A %H:%M"

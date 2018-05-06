@@ -1,3 +1,2 @@
-{% for event in events %}
-{{ event.id }}, {{ event.title }}, N, {{ event.start|date:"m/d/Y h:i A" }}, {{event.end|date:"m/d/Y h:i A"}}, {{event.track.title }}, , {{ event.desc }},{{ event.runners}}, , , , , , , {{event.resourceId.title}}
+{% for event in events %}{{ event.id }}|{{ event.title }}|Y|{{ event.start|date:"m/d/Y h:i A" }}|{{event.end|date:"m/d/Y h:i A"}}|{{event.track.title }}|||{{ event.desc|linebreaks }}|{{ event.runners|safe}}|||||{{event.resourceId.title}}||||||||||
 {% endfor %}

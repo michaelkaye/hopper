@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>ConFuzzled Events {% now "Y" %}</title>
+<style>p {font-size: 80%;} ul {font-size: 80%;} hr { display: block; margin-top: 0.5em;     margin-bottom: 0.5em; margin-left: auto; margin-right: auto; border-style: inset; border-width: 1px; } table, tr, td { border: 1px solid black;     border-collapse: collapse; padding: 3px;}</style>
+</head>\n
+<body>
+{% for id, events in runners %}
+<div>
+<h1>{0[{{ id }}_EMAIL]}</h1>
+<h1>Instructions For CFz Event Runners (Badge {{ id }})</h1>
+	<p>Hello</p>
+	<p>This is to remind you of the events which you are involved in and provides instructions for what to do for your events. Please review the below carefully as certain events have shifted since our previous email. If you have any questions, do not hesitate to reply on this email address. You can also meet us face to face at the Events Desk during Registration.</p>
+	<hr><ul>
+		{% for row in events %}
+		<li>Your event '{{ row.title }}' is run by {{ row.runners }}. It will be in {{ row.resourceId.title }} from {{ row.start|date:"d/m/Y H:i" }} to {{ row.end|date:"d/m/Y H:i" }}. The requirements are:</li>
+		{{ row.requirements|linebreaks }}
+		{% endfor %}
+	</ul><hr>
+	<p>If your event falls into one of the following categories, then this is mainly to remind you at what time your event is. You don't need to check in for these events but you are still welcome to have a chat with us at the Events Desk during Registration. This covers:</p>
+	<ul>
+		<li>DJs.</li>
+		<li>You have a CFz radio: You can radio in instead of checking in physically at ConOps, but you should still do so in advance, as explained below.</li>
+	</ul>
+	<p>If you have any electrical equipment that needs to be plugged into the mains during your event, then we ask that it is PAT tested. If you need us to do this at the convention please let us know.</p>
+	<p>If you have not already made alternative arrangements, then please check in with us before your event starts. To check in, simply report to ConOps stating which event you are involved with, and they will contact the Events team. For those late-night events when ConOps is closed, a member of the Events team will meet you at ConOps.</p>
+	<ul>
+		<li>If you are running a Main Stage event, please check-in <b>45-40min</b> before your event starts, and we'll introduce you to the stage team beforehand.</li>
+		<li>If there is a corresponding setup “event”, please check-in at the agreed setup time.</li>
+		<li>Otherwise, please check-in <b>10-15min</b> before your event starts.</li>
+	</ul>
+	<p>If you don't think you'll be able to make the check-in for your event, then please let us know now, so we don't spend time searching for you, or cancel the event. If you need to get in touch with us during the convention, please come to ConOps and say you'd like to get in touch with the Events Team.</p>
+	<p>Finally, we would like to thank you once again for volunteering your time this year to host or assist with an event. We really appreciate your participation and we hope to continue receiving awesome event submissions from your all!</p>
+	<p>Best Regards</p>
+	<p>The CFz Events System</p>
+</div><div style='page-break-after: always'> </div>
+{% endfor %}
+</body></html>
