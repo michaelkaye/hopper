@@ -30,5 +30,6 @@ urlpatterns = [
     url(r'^{}/export.xml$'.format(HOPPER_PASSWORD), views.xml),
     url(r'^sched.csv$', views.sched),
     url(r'^confirm.html$',views.confirm_emails),
+    url(r'^run.html$',views.runner_instructions),
     url(r'^$', views.index),
     ]
